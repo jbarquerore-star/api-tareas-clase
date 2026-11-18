@@ -1,19 +1,32 @@
 # Mapa de estrategia CI/CD - API de tareas
 
-> Autor o autora: (nombre)
+> Autor o autora: joshua 
 > Punto de partida: `docs/DESPLIEGUE_MANUAL.md`, el proceso manual que el pipeline va a reemplazar.
 > Cómo se ve un mapa terminado: `docs/ejemplo-mapa-cicd-sitio.md` (otro caso, mismo método).
 > Sintaxis de los diagramas: la Guía rápida de Mermaid (Moodle, material de apoyo).
 
 ## 1. Flujo de commit a producción
 
-Reemplazar este esqueleto por el flujo completo: etapas, ambientes y los puntos donde decide una
-persona. GitHub y la vista previa de VS Code (`Ctrl+Shift+V`) muestran el diagrama. Si queda muy
-ancho, cambiar `LR` por `TD`.
-
 ```mermaid
-flowchart LR
+flowchart TD
     A[Cambio en una rama] --> B[Pull request]
+    B --> C[Build: instalar dependencias fijadas]
+    C --> D[Pruebas automatizadas y linter]
+    D --> E{¿Pruebas y lint OK?}
+    E -- no --> A
+    E -- sí --> F[Merge a main]
+    F --> G[Empaquetar artefacto con SHA del commit]
+    subgraph staging[Staging]
+        H[Desplegar artefacto e inyectar secretos] --> I{¿Smoke test y auth OK?}
+    end
+    G --> H
+    I -- no --> X[Se detiene: no se promueve]
+    I -- sí --> J{{Aprobación técnica / negocio}}
+    subgraph produccion[Producción]
+        K[Desplegar mismo artefacto sin corte] --> L{¿Smoke test y health OK?}
+    end
+    J --> K
+    L -- no --> R[Rollback automático al artefacto anterior]
 ```
 
 ## 2. Ambientes
@@ -40,3 +53,4 @@ pueda comprobar.
 ## 5. Decisiones y preguntas abiertas
 
 -
+Uso de IA: Se utilizó IA como apoyo para estructurar el diagrama Mermaid y redactar las tablas a partir del análisis de riesgos del documento de despliegue manual
