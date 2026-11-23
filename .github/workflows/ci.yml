@@ -19,3 +19,15 @@ jobs:
         run: python -m pip install -r requirements-dev.txt
       - name: Pruebas
         run: bash scripts/pruebas.sh
+      - name: Validar (build)
+        run: |
+          python -m compileall -q app
+          python -c "from app import create_app; create_app()"
+      - name: Publicar reporte de pruebas
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: reporte-pruebas
+          path: reportes/
+          if-no-files-found: error
+      
