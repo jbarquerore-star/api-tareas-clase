@@ -41,4 +41,4 @@ La sección **Despliegue y rollback** del `README.md` tiene (marcar con `x` cuan
 - [X] Cuándo conviene el rollback y cómo se lanza.
 
 ## 3. Uso de IA
-- Se utilizó GitHub Copilot como apoyo para revisar el pipeline, analizar los tamaños de las imágenes y redactar la documentación.
+- Se utilizó para redactar la documentación.

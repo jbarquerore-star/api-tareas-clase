@@ -107,14 +107,12 @@ y [python:3.12-slim](https://github.com/jbarquerore-star/api-tareas-clase/action
 ### Identificar el commit de una imagen
 
 El workflow etiqueta cada imagen con el SHA completo del commit que la construyó, por ejemplo
-`ghcr.io/jbarquerore-star/api-tareas-clase:SHA_COMPLETO` (reemplaza `SHA_COMPLETO` por el SHA real).
-También guarda el SHA en la etiqueta OCI
-`org.opencontainers.image.revision` y lo pasa a `APP_VERSION`. Para comprobarlo, se puede inspeccionar
+`ghcr.io/jbarquerore-star/api-tareas-clase:SHA_COMPLETO`
 la imagen:
 
 ```bash
-docker pull ghcr.io/jbarquerore-star/api-tareas-clase:SHA_COMPLETO
-docker image inspect ghcr.io/jbarquerore-star/api-tareas-clase:SHA_COMPLETO \
+docker pull ghcr.io/jbarquerore-star/api-tareas-clase:c240da6c5359b39a8d351ad47b16c2e070c9a1fb
+docker pull ghcr.io/jbarquerore-star/api-tareas-clase@sha256:25ab3627ef9c741192c74a86c44f5191e172b55cef59af2095819b030f74f5ec \
   --format '{{ index .Config.Labels "org.opencontainers.image.revision" }}'
 ```
 
