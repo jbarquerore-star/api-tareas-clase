@@ -35,11 +35,10 @@
 
 La sección **Despliegue y rollback** del `README.md` tiene (marcar con `x` cuando esté):
 
-- [ ] El tamaño de la imagen con `python:3.12` y con `python:3.12-slim`, y la elección.
-- [ ] La justificación de cada línea del `.dockerignore`.
-- [ ] Cómo saber de qué commit salió una imagen.
-- [ ] Cuándo conviene el rollback y cómo se lanza.
+- [X] El tamaño de la imagen con `python:3.12` y con `python:3.12-slim`, y la elección.
+- [X] La justificación de cada línea del `.dockerignore`.
+- [X] Cómo saber de qué commit salió una imagen.
+- [X] Cuándo conviene el rollback y cómo se lanza.
 
 ## 3. Uso de IA
-- No se usó IA
-<Qué herramienta se usó y para qué, en una línea, o "No se usó IA".>
+- Se utilizó GitHub Copilot como apoyo para revisar el pipeline, analizar los tamaños de las imágenes y redactar la documentación.

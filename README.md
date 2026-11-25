@@ -88,3 +88,46 @@ que no forman parte de la aplicación desplegada, reducen el contexto y ayudan a
 | `tests` | Excluye las pruebas, ya que el contenedor de producción solo necesita la aplicación. |
 | `docs` | Excluye documentación que no se requiere para ejecutar la API. |
 | `.env` | Excluye configuración local que podría contener secretos; la configuración se inyecta al ejecutar el contenedor. |
+
+### Tamaño de imagen y elección de la base
+
+Se comparó la columna `DISK USAGE` de `docker image ls` en los logs de construcción, manteniendo la
+misma aplicación y cambiando la imagen base:
+
+| Imagen base | `DISK USAGE` |
+|---|---:|
+| `python:3.12` | 1.61 GB |
+| `python:3.12-slim` | 188 MB |
+
+Se elige `python:3.12-slim`: ocupa aproximadamente 1.42 GB menos (cerca de un 88% menos que la
+imagen basada en `python:3.12`) y la variante `slim` ya pasó el smoke test de staging y producción.
+Los tamaños se pueden revisar en los logs de las ejecuciones de [python:3.12](https://github.com/jbarquerore-star/api-tareas-clase/actions/runs/45548631127)
+y [python:3.12-slim](https://github.com/jbarquerore-star/api-tareas-clase/actions/runs/45539838245).
+
+### Identificar el commit de una imagen
+
+El workflow etiqueta cada imagen con el SHA completo del commit que la construyó, por ejemplo
+`ghcr.io/jbarquerore-star/api-tareas-clase:SHA_COMPLETO` (reemplaza `SHA_COMPLETO` por el SHA real).
+También guarda el SHA en la etiqueta OCI
+`org.opencontainers.image.revision` y lo pasa a `APP_VERSION`. Para comprobarlo, se puede inspeccionar
+la imagen:
+
+```bash
+docker pull ghcr.io/jbarquerore-star/api-tareas-clase:SHA_COMPLETO
+docker image inspect ghcr.io/jbarquerore-star/api-tareas-clase:SHA_COMPLETO \
+  --format '{{ index .Config.Labels "org.opencontainers.image.revision" }}'
+```
+
+La API también lo expone en `GET /version`, en el campo `version`.
+
+### Cuándo y cómo hacer rollback
+
+Conviene volver a una imagen conocida como buena cuando una versión recién desplegada presenta un
+problema y se necesita restaurar rápidamente el servicio mientras se prepara una corrección. En este
+proyecto, el workflow manual `Rollback` despliega la imagen indicada **en staging**; no hace rollback
+automático de producción.
+
+Para lanzarlo, abre **GitHub → Actions → Rollback → Run workflow**, selecciona `main` e introduce el
+SHA completo de 40 caracteres de un commit cuya imagen ya esté publicada en GHCR. El workflow valida
+el SHA, despliega esa imagen en staging y ejecuta el smoke test. Un rollback mitiga el incidente, pero
+la corrección definitiva debe integrarse después mediante un cambio hacia adelante.
